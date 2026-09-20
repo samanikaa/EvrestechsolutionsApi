@@ -5,6 +5,7 @@ namespace App\Repositories\Implementations;
 use App\Models\Customer;
 use App\Repositories\Contracts\CustomerInterface;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class CustomerRepository extends BaseRepository implements CustomerInterface
