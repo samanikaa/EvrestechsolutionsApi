@@ -4,6 +4,7 @@ namespace App\Repositories\Implementations;
 
 use App\Repositories\Contracts\BaseInterface;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 abstract class BaseRepository implements BaseInterface
@@ -21,7 +22,14 @@ abstract class BaseRepository implements BaseInterface
             $record=$this->model->create($data);
             return ['status'=>'success', 'message'=>'Record created successfully', 'data'=>$record];
         } catch (\Exception $e) {
-            return ['status'=>'error', 'message'=>$e->getMessage(), 'data'=>[]];
+            if($e->getCode() == 23505) {
+                return ['status'=>'error', 'message'=>'Duplicate entry', 'data'=>[]];
+            }
+            Log::error('Error creating record: ',[
+                'model' => get_class($this->model),
+                'message' => $e->getMessage()
+            ]);
+            return ['status'=>'error', 'message'=>'Something went wrong. Please try again.', 'data'=>[]];
         }
     }
     public function getPaginated($itemsPerPage= 10)
@@ -50,7 +58,11 @@ abstract class BaseRepository implements BaseInterface
             $record->update($data);
             return ['status'=>'success', 'message'=>'Record updated successfully', 'data'=>$record];
         } catch (\Exception $e) {
-            return ['status'=>'error', 'message'=>$e->getMessage(), 'data'=>[]];
+            Log::error('Error updating record: ',[
+                'model' => get_class($this->model),
+                'message' => $e->getMessage()
+            ]);
+            return ['status'=>'error', 'message'=>'Something went wrong. Please try again.', 'data'=>[]];
         }
     }
     public function delete($id)
@@ -63,7 +75,11 @@ abstract class BaseRepository implements BaseInterface
             $record->delete();
             return ['status'=>'success', 'message'=>'Record deleted successfully', 'data'=>$record];
         } catch (\Exception $e) {
-            return ['status'=>'error', 'message'=>$e->getMessage(), 'data'=>[]];
+            Log::error('Error deleting record: ',[
+                'model' => get_class($this->model),
+                'message' => $e->getMessage()
+            ]);
+            return ['status'=>'error', 'message'=>'Something went wrong. Please try again.', 'data'=>[]];
         }
     }
 }

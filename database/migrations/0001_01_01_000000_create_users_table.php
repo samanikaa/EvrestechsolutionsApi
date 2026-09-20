@@ -16,16 +16,18 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->text('type');
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->text('phone');
 
             $table->text('billingaddress');
             $table->text('shippingaddress');
-            $table->unique(['email', 'type']);
             $table->rememberToken();
             $table->timestamps();
+
+            
+            $table->unique(['email', 'type']);
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
