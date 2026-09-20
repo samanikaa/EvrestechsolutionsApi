@@ -22,8 +22,15 @@ class CustomerRepository extends BaseRepository implements CustomerInterface
             $data['password'] = Hash::make($data['password']);
             $record=$this->model->create($data);
             return ['status'=>'success', 'message'=>'Record created successfully', 'data'=>$record];
-        } catch (\Exception $e) {
-            return ['status'=>'error', 'message'=>$e->getMessage(), 'data'=>[]];
+        }  catch (\Exception $e) {
+            if($e->getCode() == 23505) {
+                return ['status'=>'error', 'message'=>'Duplicate entry', 'data'=>[]];
+            }
+            Log::error('Error creating record: ',[
+                'model' => get_class($this->model),
+                'message' => $e->getMessage()
+            ]);
+            return ['status'=>'error', 'message'=>'Something went wrong. Please try again.', 'data'=>[]];
         }
     }
 }
